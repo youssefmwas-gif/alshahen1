@@ -601,7 +601,12 @@
       ai: { title: 'الذكاء الاصطناعي', description: 'اشتراكات وأدوات AI مثل ChatGPT وGemini وغيرها.', icon: '🤖' },
       programs: { title: 'البرامج المدفوعة', description: 'تفعيل وشحن البرامج والتطبيقات المدفوعة.', icon: '💳' },
       vpn: { title: 'اشتراكات VPN', description: 'خدمات VPN آمنة وسريعة حسب المدة المطلوبة.', icon: '🛡️' },
-      numbers: { title: 'أرقام التفعيل', description: 'أرقام لتفعيل تطبيقات التواصل حسب التوفر.', icon: '📲' }
+      numbers: { title: 'أرقام التفعيل', description: 'أرقام لتفعيل تطبيقات التواصل حسب التوفر.', icon: '📲' },
+      streaming: { title: 'اشتراكات الترفيه', description: 'Netflix وShahid وSpotify وDisney وغيرها.', icon: '🎬' },
+      education: { title: 'التعليم والكورسات', description: 'Udemy وCoursera وخدمات التعليم الإلكتروني.', icon: '🎓' },
+      ads: { title: 'إعلانات وإدارة صفحات', description: 'إعلانات ممولة وإدارة صفحات حسب الطلب.', icon: '📣' },
+      games: { title: 'بطاقات الألعاب', description: 'بطاقات وشحن ألعاب وخدمات اللاعبين.', icon: '🎮' },
+      payments: { title: 'وسائل الدفع', description: 'خدمات دفع إلكتروني وحلول دفع متنوعة.', icon: '💳' }
     };
 
     function makeSlug(text){
@@ -616,6 +621,16 @@
       return '?category=' + encodeURIComponent(category) + '#category-products';
     }
 
+    function getCategoryInfo(category, services){
+      const itemWithName = services.find(item => item.category === category && item.categoryName);
+      const defaultInfo = CATEGORY_INFO[category] || { title: category, description: 'منتجات وخدمات هذا القسم.', icon: '🛒' };
+      return {
+        title: itemWithName ? itemWithName.categoryName : defaultInfo.title,
+        description: defaultInfo.description,
+        icon: defaultInfo.icon
+      };
+    }
+
     function renderCategories(services){
       const container = document.getElementById('categoriesGrid');
       if (!container) return;
@@ -626,7 +641,7 @@
       const finalCategories = categories.length ? categories : Object.keys(CATEGORY_INFO);
       container.innerHTML = finalCategories.map(category => {
         const count = services.filter(item => item.category === category).length;
-        const info = CATEGORY_INFO[category] || { title: category, description: 'منتجات وخدمات هذا القسم.', icon: '🛒' };
+        const info = getCategoryInfo(category, services);
         return `
           <a class="category-card" href="${categoryLink(category)}">
             <div>
@@ -660,7 +675,7 @@
       const grid = document.getElementById('categoryProductsGrid');
       const title = document.getElementById('categoryTitle');
       const description = document.getElementById('categoryDescription');
-      const info = CATEGORY_INFO[category] || { title: category, description: 'منتجات هذا القسم.' };
+      const info = getCategoryInfo(category, window.storeItems || []);
       section.classList.add('active');
       title.textContent = info.title;
       description.textContent = info.description;
@@ -679,7 +694,7 @@
       const content = document.getElementById('productDetailContent');
       const backLink = document.getElementById('productBackLink');
       const category = item.category || '';
-      const info = CATEGORY_INFO[category] || { title: 'المنتجات' };
+      const info = getCategoryInfo(category, window.storeItems || []);
       const message = `مرحبًا، أريد طلب: ${item.title || ''}`;
       backLink.href = category ? '?category=' + encodeURIComponent(category) + '#category-products' : './#services';
       backLink.textContent = '← العودة إلى ' + info.title;
@@ -726,7 +741,29 @@
 
     function renderServices(services){
       const container = document.querySelector('.services');
-      container.innerHTML = services.map(productCard).join('');
+      const categories = [];
+      services.forEach(item => {
+        if (item.category && !categories.includes(item.category)) categories.push(item.category);
+      });
+
+      if (!categories.length) {
+        container.innerHTML = services.map(productCard).join('');
+        return;
+      }
+
+      container.innerHTML = categories.map(category => {
+        const count = services.filter(item => item.category === category).length;
+        const info = getCategoryInfo(category, services);
+        return `
+          <a class="service-card" href="${categoryLink(category)}">
+            <div class="icon">${info.icon}</div>
+            <h3>${info.title}</h3>
+            <p>${info.description}</p>
+            <div class="deal-price"><strong>${count}</strong><span>منتج</span></div>
+            <span class="btn btn-primary">دخول القسم</span>
+          </a>
+        `;
+      }).join('');
     }
 
     function renderServiceSelect(services){
