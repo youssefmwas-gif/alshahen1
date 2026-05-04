@@ -475,14 +475,93 @@
       }, 250);
     }
 
+    function normalizeArabic(text){
+      return String(text || '')
+        .toLowerCase()
+        .replace(/[أإآ]/g, 'ا')
+        .replace(/ى/g, 'ي')
+        .replace(/ة/g, 'ه')
+        .replace(/[ًٌٍَُِّْ]/g, '')
+        .trim();
+    }
+
     function getAiAnswer(question){
-      const q = question.toLowerCase();
-      if (q.includes('دفع') || q.includes('شام') || q.includes('محفظ')) return 'طرق الدفع المتاحة: شام كاش، محفظة إلكترونية، أو تحويل يدوي بعد التواصل.';
-      if (q.includes('واتساب') || q.includes('تواصل')) return 'يمكنك التواصل عبر واتساب من أزرار الطلب، أو اختيار تيليجرام من نافذة إتمام الطلب.';
-      if (q.includes('ذكاء') || q.includes('chatgpt') || q.includes('ai')) return 'قسم الذكاء الاصطناعي يحتوي على اشتراكات مثل ChatGPT وGemini وأدوات AI حسب المنتجات المتوفرة في المتجر.';
-      if (q.includes('vpn')) return 'قسم VPN يحتوي على اشتراكات VPN حسب المدة والسعر المتوفرين في الموقع.';
-      if (q.includes('رقم') || q.includes('تفعيل')) return 'أرقام التفعيل متوفرة حسب الدولة والتطبيق. افتح قسم أرقام التفعيل واختر المنتج المناسب.';
-      return 'يمكنك اختيار القسم، فتح تفاصيل المنتج، ثم الضغط على اطلب ليتم حفظ طلبك لدينا قبل تحويلك للتواصل.';
+      const q = normalizeArabic(question);
+      const items = window.storeItems || [];
+      const services = items.filter(item => item.type === 'service');
+      const deals = items.filter(item => item.type === 'deal');
+
+      const matchedProduct = items.find(item => {
+        const title = normalizeArabic(item.title);
+        return title && q.includes(title);
+      });
+
+      if (matchedProduct) {
+        return `وجدت المنتج: <strong>${matchedProduct.title}</strong><br>السعر: <strong>${matchedProduct.price || 'يحدد بعد التواصل'}$</strong><br>${matchedProduct.description || ''}<br><br>اضغط على زر <strong>التفاصيل</strong> أو <strong>اطلب</strong> ليتم تسجيل طلبك لدينا.`;
+      }
+
+      if (q.includes('سعر') || q.includes('بكم') || q.includes('كم')) {
+        if (services.length) {
+          return 'هذه بعض الأسعار المتوفرة:<br>' + services.slice(0, 5).map(item => `• ${item.title}: ${item.price || 'غير محدد'}$`).join('<br>') + '<br><br>اكتب اسم المنتج لأعطيك تفاصيله.';
+        }
+        return 'الأسعار تظهر داخل بطاقات المنتجات. اختر القسم المناسب وستجد السعر أسفل كل منتج.';
+      }
+
+      if (q.includes('عرض') || q.includes('عروض') || q.includes('خصم')) {
+        if (deals.length) {
+          return 'العروض الحالية:<br>' + deals.slice(0, 5).map(item => `• ${item.title}: ${item.price || 'غير محدد'}$ بدل ${item.oldPrice || '--'}$`).join('<br>');
+        }
+        return 'لا توجد عروض حالية الآن، لكن يمكنك متابعة قسم العروض في الموقع لأن العروض تظهر تلقائيًا من Google Sheet.';
+      }
+
+      if (q.includes('دفع') || q.includes('شام') || q.includes('محفظ') || q.includes('كاش')) {
+        return 'طرق الدفع المتاحة: <strong>محفظة إلكترونية</strong>، <strong>شام كاش</strong>، أو <strong>تحويل يدوي بعد التواصل</strong>. عند الطلب يمكنك إدخال رقم عملية الدفع أو ملاحظة الدفع داخل نموذج إتمام الطلب.';
+      }
+
+      if (q.includes('طلب') || q.includes('اشتري') || q.includes('شراء') || q.includes('اطلب')) {
+        return 'لطلب منتج: اختر القسم، اضغط <strong>التفاصيل</strong> أو <strong>اطلب</strong>، ثم املأ بياناتك. سيتم حفظ الطلب في Google Sheet داخل ورقة <strong>orders</strong> ثم تحويلك للتواصل عبر واتساب أو تيليجرام.';
+      }
+
+      if (q.includes('واتساب') || q.includes('whatsapp')) {
+        return `رقم واتساب المتجر هو: <strong>${WHATSAPP_PHONE}</strong>. ويمكنك أيضًا استخدام أزرار الطلب حتى يتم حفظ طلبك قبل فتح واتساب.`;
+      }
+
+      if (q.includes('تلغرام') || q.includes('تيليجرام') || q.includes('telegram')) {
+        return `يمكنك التواصل عبر تيليجرام من نافذة إتمام الطلب. معرف تيليجرام الحالي هو: <strong>@${TELEGRAM_USERNAME}</strong>.`;
+      }
+
+      if (q.includes('ذكاء') || q.includes('chatgpt') || q.includes('gpt') || q.includes('ai') || q.includes('جيميني') || q.includes('gemini')) {
+        const aiItems = services.filter(item => item.category === 'ai');
+        if (aiItems.length) {
+          return 'منتجات قسم الذكاء الاصطناعي:<br>' + aiItems.map(item => `• ${item.title}: ${item.price || 'غير محدد'}$`).join('<br>') + '<br><br>افتح قسم الذكاء الاصطناعي لمشاهدة التفاصيل.';
+        }
+        return 'قسم الذكاء الاصطناعي مخصص لاشتراكات مثل ChatGPT وGemini وأدوات AI حسب ما تضيفه في Google Sheet.';
+      }
+
+      if (q.includes('vpn') || q.includes('في بي ان')) {
+        const vpnItems = services.filter(item => item.category === 'vpn');
+        if (vpnItems.length) return 'منتجات VPN المتوفرة:<br>' + vpnItems.map(item => `• ${item.title}: ${item.price || 'غير محدد'}$`).join('<br>');
+        return 'قسم VPN يحتوي على اشتراكات VPN حسب المدة والسعر المتوفرين في الموقع.';
+      }
+
+      if (q.includes('رقم') || q.includes('ارقام') || q.includes('تفعيل')) {
+        const numberItems = services.filter(item => item.category === 'numbers');
+        if (numberItems.length) return 'أرقام التفعيل المتوفرة:<br>' + numberItems.map(item => `• ${item.title}: ${item.price || 'غير محدد'}$`).join('<br>');
+        return 'أرقام التفعيل متوفرة حسب الدولة والتطبيق. افتح قسم أرقام التفعيل واختر المنتج المناسب.';
+      }
+
+      if (q.includes('قسم') || q.includes('اقسام') || q.includes('تصنيف')) {
+        return 'الأقسام المتاحة هي:<br>• الذكاء الاصطناعي<br>• البرامج المدفوعة<br>• اشتراكات VPN<br>• أرقام التفعيل<br><br>اضغط على أي قسم من الموقع لعرض منتجاته.';
+      }
+
+      if (q.includes('اهلا') || q.includes('مرحبا') || q.includes('السلام')) {
+        return 'أهلًا وسهلًا بك في متجر الشاهين الإلكتروني 👋 كيف أقدر أساعدك؟ يمكنك سؤالي عن الأسعار، العروض، الدفع، أو طريقة الطلب.';
+      }
+
+      const suggestions = services.slice(0, 4).map(item => `• ${item.title}`).join('<br>');
+      return suggestions
+        ? 'لم أفهم السؤال تمامًا، لكن هذه منتجات يمكنك السؤال عنها بالاسم:<br>' + suggestions + '<br><br>مثال: اكتب “كم سعر ChatGPT؟” أو “ما هي طرق الدفع؟”.'
+        : 'لم أفهم السؤال تمامًا. يمكنك سؤالي عن الأسعار، العروض، طريقة الدفع، طريقة الطلب، واتساب، تيليجرام، أو الأقسام المتوفرة.';
     }
 
     window.addEventListener('popstate', function(){
