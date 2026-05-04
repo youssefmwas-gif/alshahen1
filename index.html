@@ -218,7 +218,7 @@
   <div class="container">
     <div class="section-head">
       <h2>تصفح حسب القسم</h2>
-      <p>اختر القسم المناسب لتظهر المنتجات المرتبطة به من Google Sheet مباشرة.</p>
+      <p>اختر القسم المناسب لتظهر لك المنتجات المتوفرة داخل متجر الشاهين.</p>
     </div>
     <div class="categories-grid" id="categoriesGrid"></div>
   </div>
@@ -478,7 +478,7 @@
       if (q.includes('ذكاء') || q.includes('chatgpt') || q.includes('ai')) return 'قسم الذكاء الاصطناعي يحتوي على اشتراكات مثل ChatGPT وGemini وأدوات AI حسب المنتجات المتوفرة في الشيت.';
       if (q.includes('vpn')) return 'قسم VPN يحتوي على اشتراكات VPN حسب المدة والسعر المتوفرين في الموقع.';
       if (q.includes('رقم') || q.includes('تفعيل')) return 'أرقام التفعيل متوفرة حسب الدولة والتطبيق. افتح قسم أرقام التفعيل واختر المنتج المناسب.';
-      return 'يمكنك اختيار القسم، فتح تفاصيل المنتج، ثم الضغط على اطلب ليتم تسجيل طلبك في Google Sheet قبل تحويلك للتواصل.';
+      return 'يمكنك اختيار القسم، فتح تفاصيل المنتج، ثم الضغط على اطلب ليتم حفظ طلبك لدينا قبل تحويلك للتواصل.';
     }
 
     window.addEventListener('popstate', function(){
@@ -585,7 +585,7 @@
         <article class="service-card">
           <div class="icon">🛒</div>
           <h3>لا توجد منتجات</h3>
-          <p>أضف منتجات لهذا القسم في عمود category داخل ورقة products.</p>
+          <p>لا توجد منتجات متاحة حاليًا في هذا القسم. يرجى العودة لاحقًا أو التواصل معنا.</p>
         </article>
       `;
       setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
