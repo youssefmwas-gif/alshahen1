@@ -256,6 +256,7 @@
       <p class="lead">أرسل اسم الخدمة المطلوبة وسنرد عليك بالتفاصيل والسعر وخطوات التفعيل.</p>
       <div class="contact-list">
         <div class="contact-item">💬 واتساب: 000000000000</div>
+        <div class="contact-item">💰 الدفع: محفظة إلكترونية / شام كاش</div>
         <div class="contact-item">✉️ البريد: info@example.com</div>
         <div class="contact-item">⏱️ أوقات العمل: يوميًا</div>
       </div>
@@ -263,6 +264,7 @@
     <form class="contact-form" onsubmit="sendWhatsApp(event)">
       <div class="field"><label>الاسم</label><input id="name" required placeholder="اكتب اسمك" /></div>
       <div class="field"><label>الخدمة المطلوبة</label><input id="service" required placeholder="مثال: اشتراك AI لمدة شهر" /></div>
+      <div class="field"><label>طريقة الدفع</label><select id="payment"><option value="محفظة إلكترونية">محفظة إلكترونية</option><option value="شام كاش">شام كاش</option><option value="تحويل يدوي بعد التواصل">تحويل يدوي بعد التواصل</option></select></div>
       <div class="field"><label>ملاحظات</label><textarea id="message" placeholder="اكتب أي تفاصيل إضافية"></textarea></div>
       <button class="btn btn-primary" style="width:100%" type="submit">إرسال الطلب عبر واتساب</button>
     </form>
@@ -277,6 +279,16 @@
   </footer><a class="floating-wa" href="https://wa.me/000000000000" target="_blank" rel="noopener" aria-label="تواصل واتساب">☏</a>
 
   <script>
+    /*
+      ربط متجر الشاهين الإلكتروني مع Google Sheet
+      1) أنشئ Google Apps Script من داخل الشيت.
+      2) الصق كود Apps Script الذي سأعطيك إياه في المحادثة.
+      3) انشره كـ Web App.
+      4) ضع رابط Web App هنا بدل PUT_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE.
+    */
+    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzf7zWmyDr8fzT9CmUGiE4mCDxylGVuLtQcEhvYMpxdQD7YHze08PA_Q_cVsNdJIfA/exec";
+    const WHATSAPP_PHONE = "wa.me/963934000097";
+
     const serviceSelect = document.getElementById('serviceSelect');
     const qtySelect = document.getElementById('qtySelect');
     const price = document.getElementById('price');
@@ -284,23 +296,93 @@
     year.textContent = new Date().getFullYear();
 
     function updatePrice(){
-      const base = Number(serviceSelect.value);
-      const qty = Number(qtySelect.value);
+      const base = Number(serviceSelect.value || 0);
+      const qty = Number(qtySelect.value || 1);
       const discount = qty >= 12 ? .78 : qty >= 6 ? .84 : qty >= 3 ? .9 : 1;
       price.textContent = Math.round(base * qty * discount) + '$';
     }
+
     serviceSelect.addEventListener('change', updatePrice);
     qtySelect.addEventListener('change', updatePrice);
     updatePrice();
 
+    function whatsappLink(text = ''){
+      const encoded = encodeURIComponent(text);
+      return `https://wa.me/${WHATSAPP_PHONE}${text ? `?text=${encoded}` : ''}`;
+    }
+
+    async function loadStoreData(){
+      if (!SHEET_API_URL || SHEET_API_URL.includes('PUT_YOUR_APPS_SCRIPT')) return;
+
+      try {
+        const response = await fetch(SHEET_API_URL);
+        const data = await response.json();
+
+        if (Array.isArray(data.services) && data.services.length) {
+          renderServices(data.services);
+          renderServiceSelect(data.services);
+        }
+
+        if (Array.isArray(data.deals) && data.deals.length) {
+          renderDeals(data.deals);
+        }
+      } catch (error) {
+        console.warn('تعذر تحميل بيانات Google Sheet، سيتم عرض البيانات الافتراضية.', error);
+      }
+    }
+
+    function renderServices(services){
+      const container = document.querySelector('.services');
+      container.innerHTML = services.map(item => `
+        <article class="service-card">
+          <div class="icon">${item.icon || '🛒'}</div>
+          <h3>${item.title || ''}</h3>
+          <p>${item.description || ''}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderServiceSelect(services){
+      serviceSelect.innerHTML = services.map(item => `
+        <option value="${Number(item.price || 0)}">${item.title || 'خدمة'}</option>
+      `).join('');
+      updatePrice();
+    }
+
+    function renderDeals(deals){
+      const container = document.querySelector('.deals');
+      container.innerHTML = deals.map(item => {
+        const title = item.title || '';
+        const message = `مرحبًا، أريد طلب العرض: ${title}`;
+        return `
+          <article class="deal-card">
+            <span class="deal-tag">${item.tag || 'عرض'}</span>
+            <h3>${title}</h3>
+            <p>${item.description || ''}</p>
+            <div class="deal-price">
+              <strong>${item.price || ''}$</strong>
+              ${item.oldPrice ? `<span>${item.oldPrice}$</span>` : ''}
+            </div>
+            <a class="btn btn-primary" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب العرض</a>
+          </article>
+        `;
+      }).join('');
+    }
+
     function sendWhatsApp(event){
       event.preventDefault();
-      const phone = '000000000000';
       const name = document.getElementById('name').value.trim();
       const service = document.getElementById('service').value.trim();
+      const payment = document.getElementById('payment').value;
       const message = document.getElementById('message').value.trim();
-      const text = `مرحبًا، اسمي ${name}. أريد طلب: ${service}. ملاحظات: ${message}`;
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+      const text = `مرحبًا، اسمي ${name}. أريد طلب: ${service}. طريقة الدفع: ${payment}. ملاحظات: ${message}`;
+      window.open(whatsappLink(text), '_blank');
     }
+
+    document.querySelectorAll('a[href="https://wa.me/000000000000"]').forEach(link => {
+      link.href = whatsappLink();
+    });
+
+    loadStoreData();
   </script></body>
 </html>
