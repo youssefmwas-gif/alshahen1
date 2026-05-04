@@ -320,9 +320,7 @@
           renderServiceSelect(data.services);
         }
 
-        if (Array.isArray(data.deals) && data.deals.length) {
-          renderDeals(data.deals);
-        }
+        renderDeals(Array.isArray(data.deals) ? data.deals : []);
       };
 
       const script = document.createElement('script');
@@ -335,13 +333,23 @@
 
     function renderServices(services){
       const container = document.querySelector('.services');
-      container.innerHTML = services.map(item => `
-        <article class="service-card">
-          <div class="icon">${item.icon || '🛒'}</div>
-          <h3>${item.title || ''}</h3>
-          <p>${item.description || ''}</p>
-        </article>
-      `).join('');
+      container.innerHTML = services.map(item => {
+        const title = item.title || '';
+        const message = `مرحبًا، أريد طلب الخدمة: ${title}`;
+        return `
+          <article class="service-card">
+            <span class="deal-tag">${item.tag || 'متاح'}</span>
+            <div class="icon">${item.icon || '🛒'}</div>
+            <h3>${title}</h3>
+            <p>${item.description || ''}</p>
+            <div class="deal-price">
+              <strong>${item.price || ''}$</strong>
+              ${item.oldPrice ? `<span>${item.oldPrice}$</span>` : ''}
+            </div>
+            <a class="btn btn-primary" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب الآن</a>
+          </article>
+        `;
+      }).join('');
     }
 
     function renderServiceSelect(services){
@@ -353,6 +361,19 @@
 
     function renderDeals(deals){
       const container = document.querySelector('.deals');
+
+      if (!deals.length) {
+        container.innerHTML = `
+          <article class="deal-card">
+            <span class="deal-tag">قريبًا</span>
+            <h3>لا توجد عروض حالية</h3>
+            <p>أضف صفوفًا من نوع deal داخل ورقة products حتى تظهر العروض هنا.</p>
+            <div class="deal-price"><strong>--</strong></div>
+          </article>
+        `;
+        return;
+      }
+
       container.innerHTML = deals.map(item => {
         const title = item.title || '';
         const message = `مرحبًا، أريد طلب العرض: ${title}`;
