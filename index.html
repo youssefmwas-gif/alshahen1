@@ -108,6 +108,7 @@
     .product-detail-card{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;background:linear-gradient(180deg,var(--card),rgba(214,166,44,.06));border:1px solid var(--line);border-radius:34px;padding:30px;box-shadow:var(--shadow)}
     .product-detail-icon{min-height:280px;border-radius:28px;background:linear-gradient(135deg,rgba(214,166,44,.22),rgba(255,240,166,.08));display:grid;place-items:center;font-size:5rem;border:1px solid var(--line)}
     .product-detail-card h2{font-size:clamp(2rem,4vw,3.4rem);margin:0 0 12px}.product-detail-card p{color:var(--muted);line-height:1.9}.product-meta{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}.product-meta span{border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;padding:8px 14px;color:var(--muted);font-weight:800}.product-price{font-size:2.4rem;color:var(--brand);font-weight:900;margin:18px 0}.back-link{display:inline-flex;margin-bottom:18px;color:var(--warning);font-weight:800}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:80;padding:18px}.modal-overlay.active{display:flex}.modal-card{width:min(560px,100%);background:linear-gradient(180deg,var(--card),#050505);border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.modal-head h3{margin:0}.close-btn{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);width:40px;height:40px;border-radius:14px;cursor:pointer;font-size:1.2rem}.cart-summary{background:rgba(214,166,44,.10);border:1px solid rgba(214,166,44,.25);border-radius:18px;padding:14px;margin-bottom:16px;color:var(--muted)}.cart-summary strong{color:var(--warning)}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ai-chat{position:fixed;right:18px;bottom:18px;z-index:75}.ai-chat-button{width:58px;height:58px;border:0;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#050505;font-size:1.65rem;box-shadow:0 16px 38px rgba(214,166,44,.35);cursor:pointer}.ai-chat-panel{display:none;position:absolute;right:0;bottom:72px;width:min(340px,calc(100vw - 36px));background:linear-gradient(180deg,var(--card),#050505);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.ai-chat-panel.active{display:block}.ai-chat-head{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:900}.ai-chat-body{padding:14px;max-height:300px;overflow:auto;display:grid;gap:10px}.chat-msg{padding:10px 12px;border-radius:16px;line-height:1.6;font-size:.92rem}.chat-bot{background:rgba(214,166,44,.12);color:var(--text)}.chat-user{background:rgba(255,255,255,.07);color:var(--text)}.ai-chat-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}.ai-chat-form input{padding:10px 12px}.ai-chat-form button{padding:10px 14px}
     footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted)}.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:16px;flex-wrap:wrap}
     .floating-wa{position:fixed;left:18px;bottom:18px;z-index:30;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#050505;font-size:1.7rem;box-shadow:0 16px 38px rgba(214,166,44,.35);font-weight:900}
     @media (max-width:1050px){.services{grid-template-columns:repeat(3,1fr)}.hero-grid{grid-template-columns:1fr}.hero-card{max-width:650px;margin:auto}.nav-links{display:none}}
@@ -308,7 +309,43 @@
   </div>
 </section>
 
-  </main>  <footer>
+  </main>  <div class="modal-overlay" id="orderModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>إتمام الطلب</h3>
+        <button class="close-btn" type="button" onclick="closeOrderModal()">×</button>
+      </div>
+      <div class="cart-summary">
+        المنتج: <strong id="cartProductName">---</strong><br>
+        السعر: <strong id="cartProductPrice">---</strong>
+      </div>
+      <form onsubmit="submitCartOrder(event)">
+        <input type="hidden" id="cartProduct" />
+        <input type="hidden" id="cartPrice" />
+        <div class="field"><label>اسم العميل</label><input id="cartName" required placeholder="اكتب اسمك" /></div>
+        <div class="field"><label>رقم الهاتف أو المعرف</label><input id="cartContact" required placeholder="مثال: رقم واتساب أو Telegram username" /></div>
+        <div class="field"><label>طريقة التواصل المفضلة</label><select id="cartContactMethod"><option value="واتساب">واتساب</option><option value="تيليجرام">تيليجرام</option></select></div>
+        <div class="field"><label>طريقة الدفع</label><select id="cartPayment"><option value="محفظة إلكترونية">محفظة إلكترونية</option><option value="شام كاش">شام كاش</option><option value="تحويل يدوي بعد التواصل">تحويل يدوي بعد التواصل</option></select></div>
+        <div class="field"><label>ملاحظات</label><textarea id="cartMessage" placeholder="أي تفاصيل إضافية عن الطلب"></textarea></div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" type="submit">حفظ الطلب وواتساب</button>
+          <button class="btn btn-ghost" type="button" onclick="submitTelegramOrder()">حفظ الطلب وتيليجرام</button>
+        </div>
+      </form>
+    </div>
+  </div>  <div class="ai-chat">
+    <div class="ai-chat-panel" id="aiChatPanel">
+      <div class="ai-chat-head">مساعد الشاهين الذكي</div>
+      <div class="ai-chat-body" id="aiChatBody">
+        <div class="chat-msg chat-bot">مرحبًا 👋 اسألني عن الأقسام، الطلب، الدفع، أو طريقة التفعيل.</div>
+      </div>
+      <form class="ai-chat-form" onsubmit="sendAiChat(event)">
+        <input id="aiChatInput" placeholder="اكتب سؤالك..." />
+        <button class="btn btn-primary" type="submit">إرسال</button>
+      </form>
+    </div>
+    <button class="ai-chat-button" type="button" onclick="toggleAiChat()">🤖</button>
+  </div>  <footer>
     <div class="container footer-inner">
       <div>© <span id="year"></span> متجر الشاهين الإلكتروني. جميع الحقوق محفوظة.</div>
       <div class="footer-links"><a href="#services">الخدمات</a><a href="#deals">العروض</a><a href="#contact">تواصل</a></div>
@@ -325,6 +362,7 @@
     */
     const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzf7zWmyDr8fzT9CmUGiE4mCDxylGVuLtQcEhvYMpxdQD7YHze08PA_Q_cVsNdJIfA/exec";
     const WHATSAPP_PHONE = "963934000097";
+    const TELEGRAM_USERNAME = "wolfoldd";
 
     const serviceSelect = document.getElementById('serviceSelect');
     const qtySelect = document.getElementById('qtySelect');
@@ -352,21 +390,103 @@
       return String(value || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
     }
 
-    async function orderProduct(title, price = '', payment = 'يحدد بعد التواصل'){
-      const order = {
-        name: 'طلب سريع من الموقع',
-        service: title,
-        payment: payment,
-        message: price ? `السعر: ${price}$` : '',
-        source: 'متجر الشاهين الإلكتروني - زر المنتج',
+    function openProductPage(slug){
+      const params = new URLSearchParams(window.location.search);
+      params.set('product', slug);
+      const newUrl = window.location.pathname + '?' + params.toString();
+      history.pushState({}, '', newUrl);
+      const allItems = window.storeItems || [];
+      const item = allItems.find(productItem => makeSlug(productItem.slug || productItem.title) === slug);
+      if (item) renderProductDetail(item);
+    }
+
+    function orderProduct(title, price = ''){
+      document.getElementById('cartProduct').value = title;
+      document.getElementById('cartPrice').value = price;
+      document.getElementById('cartProductName').textContent = title || '---';
+      document.getElementById('cartProductPrice').textContent = price ? price + '$' : 'يحدد بعد التواصل';
+      document.getElementById('orderModal').classList.add('active');
+    }
+
+    function closeOrderModal(){
+      document.getElementById('orderModal').classList.remove('active');
+    }
+
+    function buildCartOrder(){
+      const product = document.getElementById('cartProduct').value;
+      const priceValue = document.getElementById('cartPrice').value;
+      const name = document.getElementById('cartName').value.trim();
+      const contact = document.getElementById('cartContact').value.trim();
+      const contactMethod = document.getElementById('cartContactMethod').value;
+      const payment = document.getElementById('cartPayment').value;
+      const message = document.getElementById('cartMessage').value.trim();
+      return {
+        name,
+        service: product,
+        payment,
+        message: `السعر: ${priceValue || 'يحدد بعد التواصل'}$ | التواصل: ${contactMethod} - ${contact} | ملاحظات: ${message}`,
+        source: 'متجر الشاهين الإلكتروني - سلة الطلب',
         createdAt: new Date().toLocaleString('ar')
       };
+    }
 
+    async function submitCartOrder(event){
+      event.preventDefault();
+      const order = buildCartOrder();
       await saveOrder(order);
-
-      const text = `مرحبًا، أريد طلب: ${title}${price ? `. السعر: ${price}$` : ''}. طريقة الدفع: ${payment}`;
+      closeOrderModal();
+      const text = `مرحبًا، اسمي ${order.name}. أريد طلب: ${order.service}. طريقة الدفع: ${order.payment}. ${order.message}`;
       window.open(whatsappLink(text), '_blank');
     }
+
+    async function submitTelegramOrder(){
+      const form = document.getElementById('cartName');
+      if (!form.value.trim() || !document.getElementById('cartContact').value.trim()) {
+        alert('يرجى إدخال الاسم ورقم الهاتف أو المعرف أولًا.');
+        return;
+      }
+      const order = buildCartOrder();
+      await saveOrder(order);
+      closeOrderModal();
+      const text = encodeURIComponent(`مرحبًا، اسمي ${order.name}. أريد طلب: ${order.service}. طريقة الدفع: ${order.payment}. ${order.message}`);
+      window.open(`https://t.me/${TELEGRAM_USERNAME}?text=${text}`, '_blank');
+    }
+
+    function toggleAiChat(){
+      document.getElementById('aiChatPanel').classList.toggle('active');
+    }
+
+    function sendAiChat(event){
+      event.preventDefault();
+      const input = document.getElementById('aiChatInput');
+      const body = document.getElementById('aiChatBody');
+      const question = input.value.trim();
+      if (!question) return;
+      body.innerHTML += `<div class="chat-msg chat-user">${question}</div>`;
+      input.value = '';
+      const answer = getAiAnswer(question);
+      setTimeout(() => {
+        body.innerHTML += `<div class="chat-msg chat-bot">${answer}</div>`;
+        body.scrollTop = body.scrollHeight;
+      }, 250);
+    }
+
+    function getAiAnswer(question){
+      const q = question.toLowerCase();
+      if (q.includes('دفع') || q.includes('شام') || q.includes('محفظ')) return 'طرق الدفع المتاحة: شام كاش، محفظة إلكترونية، أو تحويل يدوي بعد التواصل.';
+      if (q.includes('واتساب') || q.includes('تواصل')) return 'يمكنك التواصل عبر واتساب من أزرار الطلب، أو اختيار تيليجرام من نافذة إتمام الطلب.';
+      if (q.includes('ذكاء') || q.includes('chatgpt') || q.includes('ai')) return 'قسم الذكاء الاصطناعي يحتوي على اشتراكات مثل ChatGPT وGemini وأدوات AI حسب المنتجات المتوفرة في الشيت.';
+      if (q.includes('vpn')) return 'قسم VPN يحتوي على اشتراكات VPN حسب المدة والسعر المتوفرين في الموقع.';
+      if (q.includes('رقم') || q.includes('تفعيل')) return 'أرقام التفعيل متوفرة حسب الدولة والتطبيق. افتح قسم أرقام التفعيل واختر المنتج المناسب.';
+      return 'يمكنك اختيار القسم، فتح تفاصيل المنتج، ثم الضغط على اطلب ليتم تسجيل طلبك في Google Sheet قبل تحويلك للتواصل.';
+    }
+
+    window.addEventListener('popstate', function(){
+      const items = window.storeItems || [];
+      const services = items.filter(item => item.type === 'service');
+      const deals = items.filter(item => item.type === 'deal');
+      handleRouting(services, deals);
+    });
 
     function loadStoreData(){
       if (!SHEET_API_URL || SHEET_API_URL.includes('PUT_YOUR_APPS_SCRIPT')) return;
@@ -514,7 +634,7 @@
             ${item.oldPrice ? `<span>${item.oldPrice}$</span>` : ''}
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <a class="btn btn-primary" href="${productLink(item)}">التفاصيل</a>
+            <button class="btn btn-primary" type="button" onclick="openProductPage(makeSlug('${escapeText(item.slug || item.title)}'))">التفاصيل</button>
             <button class="btn btn-ghost" type="button" onclick="orderProduct('${escapeText(item.title)}', '${escapeText(item.price)}')">اطلب</button>
           </div>
         </article>
