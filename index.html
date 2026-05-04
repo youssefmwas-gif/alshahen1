@@ -1,0 +1,306 @@
+<!doctype html>
+
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>متجر الشاهين الإلكتروني</title>
+  <meta name="description" content="متجر الشاهين الإلكتروني للخدمات الرقمية: شحن البرامج المدفوعة، اشتراكات الذكاء الاصطناعي، VPN، أرقام التفعيل، وعروض مستمرة." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#030303;
+      --bg-2:#101010;
+      --card:#111111;
+      --card-2:#191919;
+      --text:#fffaf0;
+      --muted:#c8b98f;
+      --brand:#d6a62c;
+      --brand-2:#fff0a6;
+      --warning:#ffd76a;
+      --danger:#ff647c;
+      --line:rgba(214,166,44,.22);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --radius:26px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Cairo", system-ui, -apple-system, Segoe UI, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(214,166,44,.18), transparent 34rem),
+        radial-gradient(circle at top left, rgba(255,240,166,.10), transparent 34rem),
+        linear-gradient(180deg, var(--bg), #000 70%);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{width:min(1180px, calc(100% - 32px));margin-inline:auto}
+    .nav{
+      position:sticky;top:0;z-index:20;
+      backdrop-filter:blur(18px);
+      background:rgba(3,3,3,.78);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 0}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem}
+    .logo-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 12px 30px rgba(33,211,163,.25)}
+    .nav-links{display:flex;align-items:center;gap:22px;color:var(--muted);font-weight:700}
+    .nav-links a:hover{color:var(--text)}
+    .nav-actions{display:flex;align-items:center;gap:10px}
+    .btn{
+      border:0;border-radius:999px;padding:12px 20px;font-family:inherit;font-weight:800;cursor:pointer;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s ease;
+    }
+    .btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#031217;box-shadow:0 16px 36px rgba(33,211,163,.22)}
+    .btn-primary:hover{transform:translateY(-2px)}
+    .btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text)}
+    .hero{padding:70px 0 50px;position:relative}
+    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:46px}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(33,211,163,.10);border:1px solid rgba(33,211,163,.24);color:#baffec;font-weight:800;font-size:.92rem}
+    h1{font-size:clamp(2.25rem,5vw,4.7rem);line-height:1.14;margin:18px 0 18px;letter-spacing:-1.5px}
+    .lead{font-size:1.12rem;line-height:2;color:var(--muted);max-width:620px;margin:0 0 28px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:620px}
+    .stat{background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:20px;padding:16px}
+    .stat strong{display:block;font-size:1.35rem;color:#fff}.stat span{color:var(--muted);font-size:.9rem}
+    .hero-card{
+      background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+      border:1px solid var(--line);border-radius:34px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+    }
+    .hero-card:before{content:"";position:absolute;inset:-80px auto auto -90px;width:240px;height:240px;background:rgba(33,211,163,.22);filter:blur(50px);border-radius:50%}
+    .order-box{position:relative;background:rgba(0,0,0,.72);border:1px solid var(--line);border-radius:28px;padding:22px}
+    .order-box h3{margin:0 0 16px;font-size:1.25rem}
+    .field{margin-bottom:14px}.field label{display:block;color:var(--muted);font-weight:700;margin-bottom:8px;font-size:.92rem}
+    select,input,textarea{width:100%;border:1px solid var(--line);background:#080808;color:var(--text);border-radius:16px;padding:14px 16px;font-family:inherit;outline:none}
+    textarea{min-height:110px;resize:vertical}
+    .price-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,rgba(33,211,163,.12),rgba(81,167,255,.12));border:1px solid rgba(255,255,255,.13);border-radius:20px;padding:16px;margin:16px 0}
+    .price-card span{color:var(--muted)}.price-card strong{font-size:1.4rem;color:var(--warning)}
+    .ticker{border-block:1px solid var(--line);background:rgba(255,255,255,.035);overflow:hidden;margin:20px 0 0}
+    .ticker-track{display:flex;gap:14px;width:max-content;animation:scroll 28s linear infinite;padding:14px 0}
+    .chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:var(--muted);font-weight:800;white-space:nowrap}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--brand);box-shadow:0 0 16px var(--brand)}
+    @keyframes scroll{to{transform:translateX(50%)}}
+    section{padding:78px 0}.section-head{text-align:center;max-width:720px;margin:0 auto 34px}.section-head h2{font-size:clamp(1.8rem,3vw,3rem);margin:0 0 12px}.section-head p{color:var(--muted);line-height:1.9;margin:0}
+    .services{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+    .service-card{background:linear-gradient(180deg,var(--card),rgba(15,48,57,.72));border:1px solid var(--line);border-radius:var(--radius);padding:22px;min-height:230px;box-shadow:0 14px 36px rgba(0,0,0,.16);transition:.2s ease;position:relative;overflow:hidden}
+    .service-card:hover{transform:translateY(-6px);border-color:rgba(33,211,163,.45)}
+    .service-card:after{content:"";position:absolute;inset:auto -40px -50px auto;width:120px;height:120px;background:rgba(81,167,255,.14);border-radius:50%;filter:blur(12px)}
+    .icon{width:54px;height:54px;border-radius:18px;background:rgba(33,211,163,.12);display:grid;place-items:center;font-size:1.7rem;margin-bottom:18px}
+    .service-card h3{margin:0 0 10px;font-size:1.05rem}.service-card p{margin:0;color:var(--muted);line-height:1.75;font-size:.95rem}
+    .deals{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .deal-card{background:rgba(255,255,255,.065);border:1px solid var(--line);border-radius:28px;padding:22px;position:relative;overflow:hidden}
+    .deal-tag{position:absolute;top:18px;left:18px;background:rgba(255,207,90,.14);color:#ffe69b;border:1px solid rgba(255,207,90,.35);border-radius:999px;padding:6px 12px;font-weight:800;font-size:.82rem}
+    .deal-card h3{margin:44px 0 10px;font-size:1.25rem}.deal-card p{color:var(--muted);line-height:1.8}.deal-price{display:flex;align-items:end;gap:8px;margin:16px 0 18px}.deal-price strong{font-size:2rem;color:var(--brand)}.deal-price span{color:var(--muted);text-decoration:line-through}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.step{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px}.step b{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#031217;margin-bottom:14px}.step h3{margin:0 0 8px}.step p{margin:0;color:var(--muted);line-height:1.75}
+    .faq{max-width:880px;margin:auto;display:grid;gap:12px}.faq details{background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:20px;padding:18px}.faq summary{cursor:pointer;font-weight:800}.faq p{color:var(--muted);line-height:1.9;margin:12px 0 0}
+    .contact-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:stretch}.contact-info,.contact-form{background:linear-gradient(180deg,var(--card),rgba(15,48,57,.72));border:1px solid var(--line);border-radius:30px;padding:28px}.contact-info h2{margin-top:0}.contact-list{display:grid;gap:12px;margin-top:22px}.contact-item{display:flex;gap:12px;align-items:center;color:var(--muted)}
+    footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted)}.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:16px;flex-wrap:wrap}
+    .floating-wa{position:fixed;left:18px;bottom:18px;z-index:30;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#050505;font-size:1.7rem;box-shadow:0 16px 38px rgba(214,166,44,.35);font-weight:900}
+    @media (max-width:1050px){.services{grid-template-columns:repeat(3,1fr)}.hero-grid{grid-template-columns:1fr}.hero-card{max-width:650px;margin:auto}.nav-links{display:none}}
+    @media (max-width:760px){.stats,.deals,.steps,.contact-wrap{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}section{padding:56px 0}.nav-actions .btn-ghost{display:none}}
+    @media (max-width:520px){.services{grid-template-columns:1fr}.hero{padding-top:42px}h1{font-size:2.2rem}.container{width:min(100% - 22px,1180px)}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="logo" href="#top" aria-label="الرئيسية">
+        <span class="logo-mark">🦅</span>
+        <span>متجر الشاهين الإلكتروني</span>
+      </a>
+      <div class="nav-links">
+        <a href="#services">خدماتنا</a>
+        <a href="#deals">العروض</a>
+        <a href="#how">كيف نعمل</a>
+        <a href="#faq">الأسئلة</a>
+        <a href="#contact">تواصل معنا</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-ghost" href="#deals">العروض</a>
+        <a class="btn btn-primary" href="https://wa.me/000000000000" target="_blank" rel="noopener">اطلب الآن</a>
+      </div>
+    </div>
+  </nav>  <main id="top">
+    <header class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="badge">🔥 عروض مستمرة وتسليم سريع</span>
+          <h1>كل خدماتك الرقمية في متجر واحد آمن وسهل</h1>
+          <p class="lead">اشحن البرامج المدفوعة، فعّل اشتراكات الذكاء الاصطناعي وVPN، واحصل على أرقام تفعيل لكافة برامج التواصل عبر متجر الشاهين الإلكتروني بأسعار مناسبة ودعم مباشر.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#services">استعرض الخدمات</a>
+            <a class="btn btn-ghost" href="https://wa.me/000000000000" target="_blank" rel="noopener">تواصل واتساب</a>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong>24/7</strong><span>دعم وطلبات</span></div>
+            <div class="stat"><strong>+500</strong><span>طلب مكتمل</span></div>
+            <div class="stat"><strong>فوري</strong><span>تفعيل وتسليم</span></div>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="order-box">
+            <h3>ابدأ طلبك الآن</h3>
+            <div class="field">
+              <label>اختر الخدمة</label>
+              <select id="serviceSelect">
+                <option value="8">شحن البرامج المدفوعة</option>
+                <option value="12">اشتراكات الذكاء الاصطناعي</option>
+                <option value="6">تفعيل اشتراكات VPN</option>
+                <option value="3">أرقام تفعيل للتواصل</option>
+                <option value="15">باقة عروض خاصة</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>مدة الاشتراك / الكمية</label>
+              <select id="qtySelect">
+                <option value="1">شهر واحد أو طلب واحد</option>
+                <option value="3">3 أشهر / 3 طلبات</option>
+                <option value="6">6 أشهر / 6 طلبات</option>
+                <option value="12">12 شهر / 12 طلب</option>
+              </select>
+            </div>
+            <div class="price-card">
+              <span>السعر التقديري</span>
+              <strong id="price">8$</strong>
+            </div>
+            <a class="btn btn-primary" style="width:100%" href="https://wa.me/000000000000" target="_blank" rel="noopener">تأكيد عبر واتساب</a>
+          </div>
+        </div>
+      </div>
+      <div class="ticker">
+        <div class="ticker-track">
+          <span class="chip"><i class="dot"></i> ChatGPT Plus</span>
+          <span class="chip"><i class="dot"></i> Canva Pro</span>
+          <span class="chip"><i class="dot"></i> Netflix</span>
+          <span class="chip"><i class="dot"></i> VPN Premium</span>
+          <span class="chip"><i class="dot"></i> Telegram Numbers</span>
+          <span class="chip"><i class="dot"></i> WhatsApp Activation</span>
+          <span class="chip"><i class="dot"></i> Adobe</span>
+          <span class="chip"><i class="dot"></i> Microsoft 365</span>
+          <span class="chip"><i class="dot"></i> ChatGPT Plus</span>
+          <span class="chip"><i class="dot"></i> Canva Pro</span>
+          <span class="chip"><i class="dot"></i> Netflix</span>
+          <span class="chip"><i class="dot"></i> VPN Premium</span>
+        </div>
+      </div>
+    </header><section id="services">
+  <div class="container">
+    <div class="section-head">
+      <h2>خدماتنا</h2>
+      <p>خدمات رقمية مطلوبة يوميًا، منظمة كبطاقات واضحة لتسهيل الاختيار والطلب.</p>
+    </div>
+    <div class="services">
+      <article class="service-card"><div class="icon">💳</div><h3>شحن البرامج المدفوعة</h3><p>تجديد وتفعيل البرامج والتطبيقات المدفوعة لحسابك بسرعة وموثوقية.</p></article>
+      <article class="service-card"><div class="icon">🤖</div><h3>اشتراكات الذكاء الاصطناعي</h3><p>باقات شهرية لخدمات AI الشائعة مع إرشاد لاختيار الخطة الأنسب.</p></article>
+      <article class="service-card"><div class="icon">🛡️</div><h3>تفعيل VPN</h3><p>اشتراكات VPN آمنة بسرعات جيدة وخيارات شهرية وسنوية.</p></article>
+      <article class="service-card"><div class="icon">📲</div><h3>أرقام تفعيل</h3><p>أرقام لتفعيل برامج التواصل والحسابات حسب التوفر والدولة المطلوبة.</p></article>
+      <article class="service-card"><div class="icon">🎁</div><h3>عروض مستمرة</h3><p>خصومات أسبوعية وباقات مجمعة للطلاب وصناع المحتوى وأصحاب الأعمال.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="deals">
+  <div class="container">
+    <div class="section-head">
+      <h2>العروض الحالية</h2>
+      <p>غيّر الأسعار والمنتجات بسهولة من داخل ملف HTML قبل الرفع.</p>
+    </div>
+    <div class="deals">
+      <article class="deal-card"><span class="deal-tag">الأكثر طلبًا</span><h3>باقة AI شهرية</h3><p>اشتراك أداة ذكاء اصطناعي مع تفعيل ومتابعة.</p><div class="deal-price"><strong>12$</strong><span>18$</span></div><a class="btn btn-primary" href="https://wa.me/000000000000" target="_blank" rel="noopener">اطلب العرض</a></article>
+      <article class="deal-card"><span class="deal-tag">خصم</span><h3>VPN Premium</h3><p>تفعيل VPN لمدة شهر مع دعم تغيير الجهاز.</p><div class="deal-price"><strong>6$</strong><span>10$</span></div><a class="btn btn-primary" href="https://wa.me/000000000000" target="_blank" rel="noopener">اطلب العرض</a></article>
+      <article class="deal-card"><span class="deal-tag">سريع</span><h3>رقم تفعيل</h3><p>تفعيل واتساب أو تيليجرام أو منصات أخرى حسب التوفر.</p><div class="deal-price"><strong>3$</strong><span>5$</span></div><a class="btn btn-primary" href="https://wa.me/000000000000" target="_blank" rel="noopener">اطلب العرض</a></article>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="container">
+    <div class="section-head">
+      <h2>كيف نعمل؟</h2>
+      <p>رحلة طلب مختصرة وواضحة لتقليل الأسئلة وزيادة الثقة.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>اختر الخدمة</h3><p>حدد الاشتراك أو التفعيل الذي تحتاجه من صفحة الخدمات.</p></div>
+      <div class="step"><b>2</b><h3>أرسل التفاصيل</h3><p>راسلنا عبر واتساب مع اسم الخدمة والمدة أو الدولة المطلوبة.</p></div>
+      <div class="step"><b>3</b><h3>الدفع والتأكيد</h3><p>نؤكد السعر وطريقة الدفع المناسبة قبل تنفيذ الطلب.</p></div>
+      <div class="step"><b>4</b><h3>تسليم الطلب</h3><p>يتم التفعيل أو إرسال بيانات الاشتراك مع دعم بعد البيع.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <div class="section-head">
+      <h2>الأسئلة الشائعة</h2>
+      <p>أجب عن أهم أسئلة العملاء قبل أن يراسلوك.</p>
+    </div>
+    <div class="faq">
+      <details open><summary>هل التسليم فوري؟</summary><p>غالبية الخدمات يتم تسليمها خلال وقت قصير بعد تأكيد الدفع، وقد تختلف المدة حسب نوع الخدمة والتوفر.</p></details>
+      <details><summary>هل الاشتراكات أصلية؟</summary><p>يمكنك تخصيص هذا النص حسب آلية عملك، مع توضيح نوع الحساب أو التفعيل ومدة الضمان.</p></details>
+      <details><summary>ما طرق الدفع المتاحة؟</summary><p>أضف هنا طرق الدفع التي تدعمها مثل المحافظ الرقمية، التحويلات المحلية، أو العملات الرقمية.</p></details>
+      <details><summary>هل يوجد ضمان؟</summary><p>نعم، يمكنك تقديم ضمان خلال مدة محددة حسب الخدمة، مع توضيح شروط الاستبدال أو الدعم.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container contact-wrap">
+    <div class="contact-info">
+      <span class="badge">نحن بانتظار رسالتك</span>
+      <h2>تواصل معنا لطلب خدمة أو عرض خاص</h2>
+      <p class="lead">أرسل اسم الخدمة المطلوبة وسنرد عليك بالتفاصيل والسعر وخطوات التفعيل.</p>
+      <div class="contact-list">
+        <div class="contact-item">💬 واتساب: 000000000000</div>
+        <div class="contact-item">✉️ البريد: info@example.com</div>
+        <div class="contact-item">⏱️ أوقات العمل: يوميًا</div>
+      </div>
+    </div>
+    <form class="contact-form" onsubmit="sendWhatsApp(event)">
+      <div class="field"><label>الاسم</label><input id="name" required placeholder="اكتب اسمك" /></div>
+      <div class="field"><label>الخدمة المطلوبة</label><input id="service" required placeholder="مثال: اشتراك AI لمدة شهر" /></div>
+      <div class="field"><label>ملاحظات</label><textarea id="message" placeholder="اكتب أي تفاصيل إضافية"></textarea></div>
+      <button class="btn btn-primary" style="width:100%" type="submit">إرسال الطلب عبر واتساب</button>
+    </form>
+  </div>
+</section>
+
+  </main>  <footer>
+    <div class="container footer-inner">
+      <div>© <span id="year"></span> متجر الشاهين الإلكتروني. جميع الحقوق محفوظة.</div>
+      <div class="footer-links"><a href="#services">الخدمات</a><a href="#deals">العروض</a><a href="#contact">تواصل</a></div>
+    </div>
+  </footer><a class="floating-wa" href="https://wa.me/000000000000" target="_blank" rel="noopener" aria-label="تواصل واتساب">☏</a>
+
+  <script>
+    const serviceSelect = document.getElementById('serviceSelect');
+    const qtySelect = document.getElementById('qtySelect');
+    const price = document.getElementById('price');
+    const year = document.getElementById('year');
+    year.textContent = new Date().getFullYear();
+
+    function updatePrice(){
+      const base = Number(serviceSelect.value);
+      const qty = Number(qtySelect.value);
+      const discount = qty >= 12 ? .78 : qty >= 6 ? .84 : qty >= 3 ? .9 : 1;
+      price.textContent = Math.round(base * qty * discount) + '$';
+    }
+    serviceSelect.addEventListener('change', updatePrice);
+    qtySelect.addEventListener('change', updatePrice);
+    updatePrice();
+
+    function sendWhatsApp(event){
+      event.preventDefault();
+      const phone = '000000000000';
+      const name = document.getElementById('name').value.trim();
+      const service = document.getElementById('service').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const text = `مرحبًا، اسمي ${name}. أريد طلب: ${service}. ملاحظات: ${message}`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+    }
+  </script></body>
+</html>
