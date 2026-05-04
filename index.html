@@ -311,13 +311,10 @@
       return `https://wa.me/${WHATSAPP_PHONE}${text ? `?text=${encoded}` : ''}`;
     }
 
-    async function loadStoreData(){
+    function loadStoreData(){
       if (!SHEET_API_URL || SHEET_API_URL.includes('PUT_YOUR_APPS_SCRIPT')) return;
 
-      try {
-        const response = await fetch(SHEET_API_URL);
-        const data = await response.json();
-
+      window.handleStoreData = function(data){
         if (Array.isArray(data.services) && data.services.length) {
           renderServices(data.services);
           renderServiceSelect(data.services);
@@ -326,9 +323,14 @@
         if (Array.isArray(data.deals) && data.deals.length) {
           renderDeals(data.deals);
         }
-      } catch (error) {
-        console.warn('تعذر تحميل بيانات Google Sheet، سيتم عرض البيانات الافتراضية.', error);
-      }
+      };
+
+      const script = document.createElement('script');
+      script.src = SHEET_API_URL + '?callback=handleStoreData&v=' + Date.now();
+      script.onerror = function(){
+        console.warn('تعذر تحميل بيانات Google Sheet. تحقق من رابط Apps Script والصلاحيات.');
+      };
+      document.body.appendChild(script);
     }
 
     function renderServices(services){
