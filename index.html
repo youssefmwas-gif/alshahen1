@@ -348,6 +348,26 @@
       return `https://wa.me/${WHATSAPP_PHONE}${text ? `?text=${encoded}` : ''}`;
     }
 
+    function escapeText(value){
+      return String(value || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    }
+
+    async function orderProduct(title, price = '', payment = 'يحدد بعد التواصل'){
+      const order = {
+        name: 'طلب سريع من الموقع',
+        service: title,
+        payment: payment,
+        message: price ? `السعر: ${price}$` : '',
+        source: 'متجر الشاهين الإلكتروني - زر المنتج',
+        createdAt: new Date().toLocaleString('ar')
+      };
+
+      await saveOrder(order);
+
+      const text = `مرحبًا، أريد طلب: ${title}${price ? `. السعر: ${price}$` : ''}. طريقة الدفع: ${payment}`;
+      window.open(whatsappLink(text), '_blank');
+    }
+
     function loadStoreData(){
       if (!SHEET_API_URL || SHEET_API_URL.includes('PUT_YOUR_APPS_SCRIPT')) return;
 
@@ -474,7 +494,7 @@
               ${item.oldPrice ? `<span>السعر السابق: ${item.oldPrice}$</span>` : ''}
             </div>
             <div class="product-price">${item.price || ''}$</div>
-            <a class="btn btn-primary" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب الآن عبر واتساب</a>
+            <button class="btn btn-primary" type="button" onclick="orderProduct('${escapeText(item.title)}', '${escapeText(item.price)}')">اطلب الآن عبر واتساب</button>
           </div>
         </div>
       `;
@@ -495,7 +515,7 @@
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <a class="btn btn-primary" href="${productLink(item)}">التفاصيل</a>
-            <a class="btn btn-ghost" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب</a>
+            <button class="btn btn-ghost" type="button" onclick="orderProduct('${escapeText(item.title)}', '${escapeText(item.price)}')">اطلب</button>
           </div>
         </article>
       `;
@@ -540,7 +560,7 @@
               <strong>${item.price || ''}$</strong>
               ${item.oldPrice ? `<span>${item.oldPrice}$</span>` : ''}
             </div>
-            <a class="btn btn-primary" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب العرض</a>
+            <button class="btn btn-primary" type="button" onclick="orderProduct('${escapeText(title)}', '${escapeText(item.price)}')">اطلب العرض</button>
           </article>
         `;
       }).join('');
