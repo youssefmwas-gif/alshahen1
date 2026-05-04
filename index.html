@@ -99,10 +99,19 @@
     .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.step{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px}.step b{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#031217;margin-bottom:14px}.step h3{margin:0 0 8px}.step p{margin:0;color:var(--muted);line-height:1.75}
     .faq{max-width:880px;margin:auto;display:grid;gap:12px}.faq details{background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:20px;padding:18px}.faq summary{cursor:pointer;font-weight:800}.faq p{color:var(--muted);line-height:1.9;margin:12px 0 0}
     .contact-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:stretch}.contact-info,.contact-form{background:linear-gradient(180deg,var(--card),rgba(15,48,57,.72));border:1px solid var(--line);border-radius:30px;padding:28px}.contact-info h2{margin-top:0}.contact-list{display:grid;gap:12px;margin-top:22px}.contact-item{display:flex;gap:12px;align-items:center;color:var(--muted)}
+    .categories-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .category-card{background:linear-gradient(180deg,var(--card),rgba(214,166,44,.06));border:1px solid var(--line);border-radius:var(--radius);padding:24px;min-height:190px;display:flex;flex-direction:column;justify-content:space-between;transition:.2s ease;box-shadow:0 14px 36px rgba(0,0,0,.16)}
+    .category-card:hover{transform:translateY(-6px);border-color:rgba(214,166,44,.55)}
+    .cat-icon{width:58px;height:58px;border-radius:18px;background:rgba(214,166,44,.15);display:grid;place-items:center;font-size:1.8rem;margin-bottom:14px}
+    .category-card h3{margin:0 0 8px}.category-card p{margin:0;color:var(--muted);line-height:1.7}.category-card .btn{margin-top:18px;width:max-content}
+    .dynamic-section{display:none}.dynamic-section.active{display:block}
+    .product-detail-card{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;background:linear-gradient(180deg,var(--card),rgba(214,166,44,.06));border:1px solid var(--line);border-radius:34px;padding:30px;box-shadow:var(--shadow)}
+    .product-detail-icon{min-height:280px;border-radius:28px;background:linear-gradient(135deg,rgba(214,166,44,.22),rgba(255,240,166,.08));display:grid;place-items:center;font-size:5rem;border:1px solid var(--line)}
+    .product-detail-card h2{font-size:clamp(2rem,4vw,3.4rem);margin:0 0 12px}.product-detail-card p{color:var(--muted);line-height:1.9}.product-meta{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}.product-meta span{border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;padding:8px 14px;color:var(--muted);font-weight:800}.product-price{font-size:2.4rem;color:var(--brand);font-weight:900;margin:18px 0}.back-link{display:inline-flex;margin-bottom:18px;color:var(--warning);font-weight:800}
     footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted)}.footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:16px;flex-wrap:wrap}
     .floating-wa{position:fixed;left:18px;bottom:18px;z-index:30;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#050505;font-size:1.7rem;box-shadow:0 16px 38px rgba(214,166,44,.35);font-weight:900}
     @media (max-width:1050px){.services{grid-template-columns:repeat(3,1fr)}.hero-grid{grid-template-columns:1fr}.hero-card{max-width:650px;margin:auto}.nav-links{display:none}}
-    @media (max-width:760px){.stats,.deals,.steps,.contact-wrap{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}section{padding:56px 0}.nav-actions .btn-ghost{display:none}}
+    @media (max-width:760px){.stats,.deals,.steps,.contact-wrap,.categories-grid,.product-detail-card{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}section{padding:56px 0}.nav-actions .btn-ghost{display:none}}
     @media (max-width:520px){.services{grid-template-columns:1fr}.hero{padding-top:42px}h1{font-size:2.2rem}.container{width:min(100% - 22px,1180px)}}
   </style>
 </head>
@@ -201,6 +210,34 @@
       <article class="service-card"><div class="icon">📲</div><h3>أرقام تفعيل</h3><p>أرقام لتفعيل برامج التواصل والحسابات حسب التوفر والدولة المطلوبة.</p></article>
       <article class="service-card"><div class="icon">🎁</div><h3>عروض مستمرة</h3><p>خصومات أسبوعية وباقات مجمعة للطلاب وصناع المحتوى وأصحاب الأعمال.</p></article>
     </div>
+  </div>
+</section>
+
+<section id="categories">
+  <div class="container">
+    <div class="section-head">
+      <h2>تصفح حسب القسم</h2>
+      <p>اختر القسم المناسب لتظهر المنتجات المرتبطة به من Google Sheet مباشرة.</p>
+    </div>
+    <div class="categories-grid" id="categoriesGrid"></div>
+  </div>
+</section>
+
+<section id="category-products" class="dynamic-section">
+  <div class="container">
+    <a class="back-link" href="./#categories">← العودة للأقسام</a>
+    <div class="section-head">
+      <h2 id="categoryTitle">منتجات القسم</h2>
+      <p id="categoryDescription">اختر المنتج المناسب واطلبه عبر واتساب.</p>
+    </div>
+    <div class="services" id="categoryProductsGrid"></div>
+  </div>
+</section>
+
+<section id="product-detail" class="dynamic-section">
+  <div class="container">
+    <a class="back-link" id="productBackLink" href="./#categories">← العودة</a>
+    <div id="productDetailContent"></div>
   </div>
 </section>
 
@@ -315,12 +352,18 @@
       if (!SHEET_API_URL || SHEET_API_URL.includes('PUT_YOUR_APPS_SCRIPT')) return;
 
       window.handleStoreData = function(data){
-        if (Array.isArray(data.services) && data.services.length) {
-          renderServices(data.services);
-          renderServiceSelect(data.services);
+        const services = Array.isArray(data.services) ? data.services : [];
+        const deals = Array.isArray(data.deals) ? data.deals : [];
+        window.storeItems = services.concat(deals);
+
+        if (services.length) {
+          renderServices(services);
+          renderServiceSelect(services);
         }
 
-        renderDeals(Array.isArray(data.deals) ? data.deals : []);
+        renderDeals(deals);
+        renderCategories(services);
+        handleRouting(services, deals);
       };
 
       const script = document.createElement('script');
@@ -331,25 +374,136 @@
       document.body.appendChild(script);
     }
 
-    function renderServices(services){
-      const container = document.querySelector('.services');
-      container.innerHTML = services.map(item => {
-        const title = item.title || '';
-        const message = `مرحبًا، أريد طلب الخدمة: ${title}`;
+    const CATEGORY_INFO = {
+      ai: { title: 'الذكاء الاصطناعي', description: 'اشتراكات وأدوات AI مثل ChatGPT وGemini وغيرها.', icon: '🤖' },
+      programs: { title: 'البرامج المدفوعة', description: 'تفعيل وشحن البرامج والتطبيقات المدفوعة.', icon: '💳' },
+      vpn: { title: 'اشتراكات VPN', description: 'خدمات VPN آمنة وسريعة حسب المدة المطلوبة.', icon: '🛡️' },
+      numbers: { title: 'أرقام التفعيل', description: 'أرقام لتفعيل تطبيقات التواصل حسب التوفر.', icon: '📲' }
+    };
+
+    function makeSlug(text){
+      return encodeURIComponent(String(text || '').trim().toLowerCase().split(' ').join('-'));
+    }
+
+    function productLink(item){
+      return '?product=' + makeSlug(item.slug || item.title);
+    }
+
+    function categoryLink(category){
+      return '?category=' + encodeURIComponent(category) + '#category-products';
+    }
+
+    function renderCategories(services){
+      const container = document.getElementById('categoriesGrid');
+      if (!container) return;
+      const categories = [];
+      services.forEach(item => {
+        if (item.category && !categories.includes(item.category)) categories.push(item.category);
+      });
+      const finalCategories = categories.length ? categories : Object.keys(CATEGORY_INFO);
+      container.innerHTML = finalCategories.map(category => {
+        const count = services.filter(item => item.category === category).length;
+        const info = CATEGORY_INFO[category] || { title: category, description: 'منتجات وخدمات هذا القسم.', icon: '🛒' };
         return `
-          <article class="service-card">
-            <span class="deal-tag">${item.tag || 'متاح'}</span>
-            <div class="icon">${item.icon || '🛒'}</div>
-            <h3>${title}</h3>
-            <p>${item.description || ''}</p>
-            <div class="deal-price">
-              <strong>${item.price || ''}$</strong>
-              ${item.oldPrice ? `<span>${item.oldPrice}$</span>` : ''}
+          <a class="category-card" href="${categoryLink(category)}">
+            <div>
+              <div class="cat-icon">${info.icon}</div>
+              <h3>${info.title}</h3>
+              <p>${info.description}</p>
             </div>
-            <a class="btn btn-primary" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب الآن</a>
-          </article>
+            <span class="btn btn-primary">عرض المنتجات ${count ? '(' + count + ')' : ''}</span>
+          </a>
         `;
       }).join('');
+    }
+
+    function handleRouting(services, deals){
+      const params = new URLSearchParams(window.location.search);
+      const category = params.get('category');
+      const product = params.get('product');
+      if (product) {
+        const allItems = services.concat(deals);
+        const item = allItems.find(productItem => makeSlug(productItem.slug || productItem.title) === product);
+        if (item) renderProductDetail(item);
+        return;
+      }
+      if (category) {
+        renderCategoryProducts(category, services.filter(item => item.category === category));
+      }
+    }
+
+    function renderCategoryProducts(category, products){
+      const section = document.getElementById('category-products');
+      const grid = document.getElementById('categoryProductsGrid');
+      const title = document.getElementById('categoryTitle');
+      const description = document.getElementById('categoryDescription');
+      const info = CATEGORY_INFO[category] || { title: category, description: 'منتجات هذا القسم.' };
+      section.classList.add('active');
+      title.textContent = info.title;
+      description.textContent = info.description;
+      grid.innerHTML = products.length ? products.map(productCard).join('') : `
+        <article class="service-card">
+          <div class="icon">🛒</div>
+          <h3>لا توجد منتجات</h3>
+          <p>أضف منتجات لهذا القسم في عمود category داخل ورقة products.</p>
+        </article>
+      `;
+      setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
+    }
+
+    function renderProductDetail(item){
+      const section = document.getElementById('product-detail');
+      const content = document.getElementById('productDetailContent');
+      const backLink = document.getElementById('productBackLink');
+      const category = item.category || '';
+      const info = CATEGORY_INFO[category] || { title: 'المنتجات' };
+      const message = `مرحبًا، أريد طلب: ${item.title || ''}`;
+      backLink.href = category ? '?category=' + encodeURIComponent(category) + '#category-products' : './#services';
+      backLink.textContent = '← العودة إلى ' + info.title;
+      section.classList.add('active');
+      content.innerHTML = `
+        <div class="product-detail-card">
+          <div class="product-detail-icon">${item.icon || '🛒'}</div>
+          <div>
+            <span class="badge">${item.tag || 'متاح'}</span>
+            <h2>${item.title || ''}</h2>
+            <p>${item.description || ''}</p>
+            ${item.details ? `<p>${item.details}</p>` : ''}
+            <div class="product-meta">
+              <span>القسم: ${info.title}</span>
+              ${item.oldPrice ? `<span>السعر السابق: ${item.oldPrice}$</span>` : ''}
+            </div>
+            <div class="product-price">${item.price || ''}$</div>
+            <a class="btn btn-primary" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب الآن عبر واتساب</a>
+          </div>
+        </div>
+      `;
+      setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
+    }
+
+    function productCard(item){
+      const message = `مرحبًا، أريد طلب الخدمة: ${item.title || ''}`;
+      return `
+        <article class="service-card">
+          <span class="deal-tag">${item.tag || 'متاح'}</span>
+          <div class="icon">${item.icon || '🛒'}</div>
+          <h3>${item.title || ''}</h3>
+          <p>${item.description || ''}</p>
+          <div class="deal-price">
+            <strong>${item.price || ''}$</strong>
+            ${item.oldPrice ? `<span>${item.oldPrice}$</span>` : ''}
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn btn-primary" href="${productLink(item)}">التفاصيل</a>
+            <a class="btn btn-ghost" href="${whatsappLink(message)}" target="_blank" rel="noopener">اطلب</a>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderServices(services){
+      const container = document.querySelector('.services');
+      container.innerHTML = services.map(productCard).join('');
     }
 
     function renderServiceSelect(services){
