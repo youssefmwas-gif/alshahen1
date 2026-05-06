@@ -21,6 +21,14 @@ section{padding:64px 0}.head{text-align:center;max-width:720px;margin:0 auto 28p
 footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted)}.foot{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.wa{position:fixed;left:18px;bottom:80px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:grid;place-items:center;color:#050505;font-weight:900;font-size:1.4rem}
 @media(max-width:900px){.grid2,.detail{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.deals{grid-template-columns:1fr}.links{display:none}}@media(max-width:560px){.cards,.filters,.stats,.paylinks,.modalActions{grid-template-columns:1fr}.hero{padding-top:42px}}
 </style>
+<meta name="theme-color" content="#d6a62c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="متجر الشاهين">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 </head>
 <body>
 <div class="announcement" id="announcementBar"></div>
@@ -103,6 +111,15 @@ function renderReviews(items){items=(items||[]).filter(r=>String(r.active||'yes'
 function shareProduct(title,url){let text=`شاهد هذا المنتج من متجر الشاهين: ${title}\n${url}`;if(navigator.share){navigator.share({title,text,url}).catch(()=>{})}else{navigator.clipboard?.writeText(text);showToast('تم نسخ رابط المنتج ✅')}}
 
 window.addEventListener("popstate",()=>{let items=window.storeItems||[];handleRouting(items.filter(i=>i.type==="service"),items.filter(i=>i.type==="deal"))});loadStoreData();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./service-worker.js").catch(function (error) {
+      console.warn("Service Worker registration failed:", error);
+    });
+  });
+}
 </script>
 </body>
 </html>
