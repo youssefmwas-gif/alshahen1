@@ -103,9 +103,117 @@ async function submitTelegramOrder(){if(!cartName.value.trim()||!cartContact.val
 async function submitCustomRequest(e){e.preventDefault();let orderId=generateOrderId(),serviceName=customService.value.trim();let o={orderId,name:customName.value.trim(),service:"طلب مخصص: "+serviceName,price:customBudget.value.trim(),coupon:"",payment:"يحدد بعد التواصل",contactMethod:customContactMethod.value,contact:customContact.value.trim(),paymentProof:"",message:`طلب مخصص | الخدمة: ${serviceName} | الميزانية: ${customBudget.value.trim()||"غير محددة"} | التواصل: ${customContactMethod.value} - ${customContact.value.trim()} | التفاصيل: ${customDetails.value.trim()}`,source:"متجر الشاهين الإلكتروني - طلب مخصص",createdAt:new Date().toLocaleString("ar")};await saveOrder(o);customRequestResult.innerHTML=`<b>تم تسجيل طلبك المخصص ✅</b><br>رقم الطلب: <b>${orderId}</b><br><button class="btn ghost" type="button" onclick="copyOrderId('${orderId}')">نسخ رقم الطلب</button>`;customRequestResult.classList.add("active");showToast("تم إرسال الطلب المخصص ✅");window.open(whatsappLink(`طلب مخصص من متجر الشاهين\nالاسم: ${o.name}\nرقم الطلب: ${orderId}\n${o.message}`),"_blank")}
 async function sendWhatsApp(e){e.preventDefault();let o={orderId:generateOrderId(),name:name.value.trim(),service:service.value.trim(),payment:payment.value,message:message.value.trim(),source:"متجر الشاهين الإلكتروني - نموذج التواصل",createdAt:new Date().toLocaleString("ar")};await saveOrder(o);window.open(whatsappLink(`مرحبًا، اسمي ${o.name}. أريد طلب: ${o.service}. طريقة الدفع: ${o.payment}. ملاحظات: ${o.message}`),"_blank")}
 function trackOrder(){let id=trackOrderId.value.trim();if(!id){trackResult.style.display="block";trackResult.innerHTML="يرجى إدخال رقم الطلب أولًا.";return}trackResult.style.display="block";trackResult.innerHTML="جاري البحث عن الطلب...";window.handleOrderTrack=function(d){trackResult.innerHTML=(!d||!d.found)?"لم يتم العثور على طلب بهذا الرقم.":`<b>رقم الطلب:</b> ${d.orderId||id}<br><b>الخدمة:</b> ${d.service||"-"}<br><b>الاسم:</b> ${d.name||"-"}<br><b>طريقة الدفع:</b> ${d.payment||"-"}<br><b>حالة الطلب:</b> ${d.orderStatus||"تم استلام الطلب"}<br><b>آخر تحديث:</b> ${d.updatedAt||d.date||"-"}`};let old=document.getElementById("trackOrderScript");if(old)old.remove();let s=document.createElement("script");s.id="trackOrderScript";s.src=SHEET_API_URL+"?action=track&orderId="+encodeURIComponent(id)+"&callback=handleOrderTrack&v="+Date.now();document.body.appendChild(s)}
-function toggleAiChat(){aiChatPanel.classList.toggle("active")}function normAr(t){return String(t||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").trim()}
-function sendAiChat(e){e.preventDefault();let q=aiChatInput.value.trim();if(!q)return;aiChatBody.innerHTML+=`<div class="msg user">${q}</div>`;aiChatInput.value="";let a=getAnswer(q);setTimeout(()=>{aiChatBody.innerHTML+=`<div class="msg bot">${a}</div>`;aiChatBody.scrollTop=aiChatBody.scrollHeight},200)}
-function getAnswer(q){q=normAr(q);let items=window.storeItems||[],services=items.filter(i=>i.type==="service"),deals=items.filter(i=>i.type==="deal"),m=items.find(i=>normAr(i.title)&&q.includes(normAr(i.title)));if(m)return`وجدت المنتج: <b>${m.title}</b><br>السعر: <b>${m.price||"يحدد"}$</b><br>${m.description||""}`;if(q.includes("سعر")||q.includes("بكم"))return services.slice(0,5).map(i=>`• ${i.title}: ${i.price||"غير محدد"}$`).join("<br>")||"الأسعار تظهر داخل المنتجات.";if(q.includes("عرض")||q.includes("خصم"))return deals.length?deals.slice(0,5).map(i=>`• ${i.title}: ${i.price||"غير محدد"}$`).join("<br>"):"لا توجد عروض حالية الآن.";if(q.includes("دفع")||q.includes("شام")||q.includes("محفظ"))return"طرق الدفع: محفظة إلكترونية، شام كاش، أو تحويل يدوي.";if(q.includes("طلب")||q.includes("شراء"))return"اختر المنتج ثم اضغط اطلب، سيتم حفظ طلبك ثم تحويلك للتواصل.";if(q.includes("واتساب"))return`واتساب المتجر: <b>${WHATSAPP_PHONE}</b>`;return"يمكنك سؤالي عن الأسعار، العروض، الدفع، طريقة الطلب، أو الأقسام."}
+function toggleAiChat(){aiChatPanel.classList.toggle("active")}
+function normAr(t){return String(t||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[ًٌٍَُِّْ]/g,"").replace(/[^\u0600-\u06FFa-z0-9\s]/g," ").replace(/\s+/g," ").trim()}
+function words(t){return normAr(t).split(" ").filter(w=>w.length>1)}
+function productText(i){return normAr(`${i.title||""} ${i.description||""} ${i.details||""} ${i.categoryName||""} ${i.tag||""} ${i.duration||""} ${i.deliveryTime||""} ${i.warranty||""}`)}
+function scoreProduct(i,q){
+  let query=normAr(q), qw=words(q), txt=productText(i), title=normAr(i.title||""), score=0;
+  if(!query)return 0;
+  if(title && query.includes(title))score+=80;
+  if(title && title.includes(query))score+=70;
+  if(txt.includes(query))score+=50;
+  qw.forEach(w=>{if(title.includes(w))score+=18;if(txt.includes(w))score+=8});
+  const aliases=[
+    {keys:["شات","جي بي تي","gpt","chat","chatgpt","شات جي بي تي"],cat:"ai",boost:["chatgpt","gpt"]},
+    {keys:["ذكاء","ai","الذكاء","اصطناعي","روبوت"],cat:"ai",boost:[]},
+    {keys:["جيميناي","gemini"],cat:"ai",boost:["gemini"]},
+    {keys:["كلود","claude"],cat:"ai",boost:["claude"]},
+    {keys:["كانفا","canva","تصميم","مصمم"],cat:"programs",boost:["canva"]},
+    {keys:["اوفيس","office","وورد","اكسل","excel","word","مايكروسوفت"],cat:"programs",boost:["office","365"]},
+    {keys:["vpn","في بي ان","في بي ان","حظر","خصوصيه","تصفح"],cat:"vpn",boost:["vpn"]},
+    {keys:["رقم","ارقام","واتس","واتساب","telegram","تلغرام","تيليجرام","تفعيل رقم"],cat:"numbers",boost:["واتساب","telegram","رقم"]},
+    {keys:["نتفلكس","netflix","شاهد","spotify","سبوتفاي","ترفيه"],cat:"streaming",boost:["netflix","spotify"]},
+    {keys:["العاب","لعبه","ببجي","شدات","steam","ستيم"],cat:"games",boost:["game","steam"]},
+    {keys:["اعلان","اعلانات","تسويق","مموله","صفحات"],cat:"ads",boost:["اعلان"]}
+  ];
+  aliases.forEach(a=>{
+    if(a.keys.some(k=>query.includes(normAr(k)))){
+      if(normAr(i.category||"")===normAr(a.cat))score+=35;
+      a.boost.forEach(b=>{if(txt.includes(normAr(b)))score+=25});
+    }
+  });
+  return score;
+}
+function findProducts(q,limit=5){
+  return (window.storeItems||[])
+    .filter(i=>String(i.visible||"yes").toLowerCase()!=="no")
+    .map(i=>({item:i,score:scoreProduct(i,q)}))
+    .filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,limit)
+    .map(x=>x.item);
+}
+function formatProductLine(i){
+  let st=statusText(i.status), price=i.price?`${i.price}$`:"يحدد بعد التواصل";
+  return `• <b>${i.title||"منتج"}</b> - ${price} - ${st}${i.duration?` - ${i.duration}`:""}`;
+}
+function sendAiChat(e){
+  e.preventDefault();
+  let q=aiChatInput.value.trim();
+  if(!q)return;
+  aiChatBody.innerHTML+=`<div class="msg user">${q}</div>`;
+  aiChatInput.value="";
+  let a=getAnswer(q);
+  setTimeout(()=>{aiChatBody.innerHTML+=`<div class="msg bot">${a}</div>`;aiChatBody.scrollTop=aiChatBody.scrollHeight},200)
+}
+function getAnswer(q){
+  let query=normAr(q),items=(window.storeItems||[]).filter(i=>String(i.visible||"yes").toLowerCase()!=="no"),services=items.filter(i=>i.type==="service"),deals=items.filter(i=>i.type==="deal");
+  let found=findProducts(q,5);
+
+  if(query.includes("مساعده")||query.includes("ماذا")||query.includes("كيف استخدم")||query.includes("اوامر")){
+    return `يمكنك سؤالي بطريقة طبيعية مثل:<br>• عندك شات جي بي تي؟<br>• بدي برنامج تصميم<br>• في VPN؟<br>• أريد رقم واتساب<br>• ما العروض؟<br>• كيف أطلب؟<br>• كم مدة التسليم؟`;
+  }
+
+  if(query.includes("عرض")||query.includes("خصم")||query.includes("كوبون")){
+    if(deals.length)return `العروض الحالية:<br>${deals.slice(0,6).map(formatProductLine).join("<br>")}<br><br>يمكنك الضغط على قسم العروض أو كتابة اسم العرض.`;
+    return `لا توجد عروض حالية ظاهرة الآن. إذا لديك كوبون، أدخله داخل نافذة الطلب عند الشراء.`;
+  }
+
+  if(query.includes("دفع")||query.includes("شام")||query.includes("محفظ")||query.includes("تحويل")){
+    return `طرق الدفع المتاحة: محفظة إلكترونية، شام كاش، أو تحويل يدوي بعد التواصل.<br>بعد اختيار المنتج اضغط "اطلب" ثم أدخل رقم عملية الدفع أو إشعار الدفع.`;
+  }
+
+  if(query.includes("ضمان")||query.includes("استبدال")||query.includes("تعويض")){
+    return `يوجد ضمان حسب نوع الخدمة. ستجد ضمان كل منتج داخل صفحة التفاصيل، ويمكنك مراجعة قسم سياسة الضمان والاستبدال في الموقع. احتفظ دائمًا برقم الطلب.`;
+  }
+
+  if(query.includes("تسليم")||query.includes("وقت")||query.includes("مدة")||query.includes("متى")){
+    if(found.length)return `مدة التسليم حسب المنتج:<br>${found.map(i=>`• <b>${i.title}</b>: ${i.deliveryTime||"تحدد بعد التواصل"}`).join("<br>")}`;
+    return `مدة التسليم تختلف حسب الخدمة. بعض الخدمات فورية، وبعضها خلال دقائق أو ساعات. افتح تفاصيل المنتج لرؤية مدة التسليم.`;
+  }
+
+  if(query.includes("طلب")||query.includes("شراء")||query.includes("اطلب")||query.includes("كيف اطلب")){
+    return `طريقة الطلب سهلة:<br>1. اختر القسم أو المنتج.<br>2. اضغط "اطلب".<br>3. أدخل اسمك ووسيلة التواصل وطريقة الدفع.<br>4. سيتم تسجيل طلبك في Google Sheet وستحصل على رقم طلب للتتبع.`;
+  }
+
+  if(query.includes("تتبع")||query.includes("حاله")||query.includes("رقم الطلب")){
+    return `لتتبع طلبك، افتح قسم "تتبع الطلب" وأدخل رقم الطلب مثل ORD-20260504-1234.`;
+  }
+
+  if(query.includes("واتساب")||query.includes("whatsapp")){
+    return `واتساب المتجر: <b>${WHATSAPP_PHONE}</b><br>يمكنك أيضًا الضغط على زر واتساب العائم في أسفل الصفحة.`;
+  }
+
+  if(query.includes("تلغرام")||query.includes("تيليجرام")||query.includes("telegram")){
+    return `تيليجرام المتجر: <b>@${TELEGRAM_USERNAME}</b><br>يمكنك اختيار تيليجرام داخل نافذة الطلب.`;
+  }
+
+  if(query.includes("غير موجود")||query.includes("مو موجود")||query.includes("طلب مخصص")||query.includes("خدمه خاصه")){
+    return `إذا لم تجد الخدمة المطلوبة، استخدم قسم "طلب مخصص" واكتب الخدمة والميزانية وطريقة التواصل، وسيتم تسجيل طلبك والرد عليك.`;
+  }
+
+  if(found.length){
+    return `وجدت لك هذه النتائج الأقرب:<br>${found.map(formatProductLine).join("<br>")}<br><br>اكتب اسم المنتج أو افتح القسم المناسب لرؤية التفاصيل والطلب.`;
+  }
+
+  if(query.includes("سعر")||query.includes("بكم")||query.includes("كم")){
+    return services.length?`بعض الأسعار المتوفرة:<br>${services.slice(0,6).map(formatProductLine).join("<br>")}<br><br>اكتب اسم الخدمة لأعطيك نتيجة أدق.`:`الأسعار تظهر داخل بطاقات المنتجات بعد تحميل بيانات المتجر.`;
+  }
+
+  return `لم أجد نتيجة دقيقة، لكن يمكنك كتابة كلمات قريبة مثل: شات جي بي تي، تصميم، VPN، رقم واتساب، عروض، دفع، ضمان، أو طلب مخصص.`;
+}
+
 
 function renderExtraSections(services,deals,data){renderBestSellers(services,data.bestSellers||[]);renderUpcoming(services);renderReviews(data.reviews||[])}
 function renderBestSellers(services,best){let selected=[];(best||[]).forEach(b=>{let f=services.find(s=>String(s.title).trim()===String(b.service).trim());if(f&&!selected.includes(f))selected.push({...f,salesCount:b.count})});if(!selected.length)selected=services.filter(i=>String(i.featured||'').toLowerCase()==='yes').slice(0,4);if(!selected.length)selected=services.filter(i=>normStatus(i.status)==='available').slice(0,4);if(window.bestSellersGrid)bestSellersGrid.innerHTML=selected.length?selected.map(productCard).join(''):`<article class="card"><h3>لا توجد بيانات بعد</h3><p>سيظهر هنا الأكثر طلبًا بعد تسجيل الطلبات.</p></article>`}
