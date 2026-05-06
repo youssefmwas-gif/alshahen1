@@ -1,0 +1,67 @@
+{
+  "name": "متجر الشاهين الإلكتروني",
+  "short_name": "الشاهين",
+  "description": "متجر الشاهين الإلكتروني للخدمات الرقمية والاشتراكات والعروض.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#030303",
+  "theme_color": "#d6a62c",
+  "categories": [
+    "shopping",
+    "business",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "الأقسام",
+      "short_name": "الأقسام",
+      "url": "./#categories",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "تتبع الطلب",
+      "short_name": "تتبع",
+      "url": "./#track",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "العروض",
+      "short_name": "العروض",
+      "url": "./#deals",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
