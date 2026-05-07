@@ -1,4 +1,5 @@
-const CACHE_NAME = "alshahen-store-pwa-v1";
+const CACHE_NAME = "alshahen-store-pwa-v2";
+
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -18,7 +19,11 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
     )
   );
   self.clients.claim();
@@ -28,12 +33,13 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Do not cache Google Apps Script / external APIs. Always use network.
-  if (url.hostname.includes("script.google.com") || url.hostname.includes("googleusercontent.com")) {
+  if (
+    url.hostname.includes("script.google.com") ||
+    url.hostname.includes("googleusercontent.com")
+  ) {
     return;
   }
 
-  // Network-first for page navigation, fallback to offline page.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -47,14 +53,19 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Cache-first for local static assets.
   event.respondWith(
     caches.match(request).then(cached => {
       return cached || fetch(request).then(response => {
-        if (request.method === "GET" && response && response.status === 200 && url.origin === location.origin) {
+        if (
+          request.method === "GET" &&
+          response &&
+          response.status === 200 &&
+          url.origin === location.origin
+        ) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
         }
+
         return response;
       });
     })
